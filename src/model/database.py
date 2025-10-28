@@ -1,20 +1,32 @@
-# Conexão com o banco de dados
-import urllib.parse as u
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+# src/model/database.py
+import mysql.connector
 
-DATABASE_URL = "mysql+pymysql://root:pedrosallorenzo2301@localhost:3306/bd_ps_bd2"
+DB_CONFIG = {
+    "host": "127.0.0.1",
+    "port": 3307,  # porta do host (compose)
+    "user": "root",
+    "password": "root123",  # troque se sua senha for outra
+    "database": "db_projeto_ps_bd2",  # nome do seu banco corrigido
+}
 
-engine = create_engine(DATABASE_URL, future=True)
-SessionLocal = sessionmaker(
-    bind=engine, autoflush=False, autocommit=False, expire_on_commit=False
-)
+
+def get_connection():
+    return mysql.connector.connect(**DB_CONFIG)
 
 
-def get_session():
-    # para usar nas rotas
-    db = SessionLocal()
+def ping() -> bool:
+    conn = cur = None
     try:
-        yield db
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        return cur.fetchone() == (1,)
     finally:
-        db.close()
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+if __name__ == "__main__":
+    print("Conexão bem-sucedida! ✅" if ping() else "Falha na conexão ❌")
