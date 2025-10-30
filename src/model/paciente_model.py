@@ -29,12 +29,9 @@ class PacienteModel:  # nome é obrigatório, especialidade é recomendado cpf p
                 if not cur.fetchone():
                     return {"ok": False, "msg": "Especialidade requisitada é inválida!"}
 
-            sql = """
-                INSERT INTO tb_pacientes
-                (nome, cpf, telefone, data_nascimento, tipo_sanguineo,
-                especialidade_req_id, leito, status_ps)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, 'AGURADANDO')
-            """
+            sql = """INSERT INTO tb_pacientes
+                    (nome, cpf, telefone, data_nascimento, tipo_sanguineo, especialidade_req_id, leito, status_ps)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,'AGUARDANDO')"""
             cur.execute(
                 sql,
                 (
