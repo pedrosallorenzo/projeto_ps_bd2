@@ -6,7 +6,7 @@ from .database import get_connection
 
 
 class AtendimentoModel:
-    @staticmethod
+    @staticmethod  # Abre o atendimento
     def abrir(paciente_id: int, funcionario_cpf: str, funcao: str) -> dict:
         if funcao not in ("MEDICO", "ENFERMEIRO"):
             return {"ok": False, "msg": "Função inválida."}
@@ -62,3 +62,31 @@ class AtendimentoModel:
                 cur.close()
             if conn:
                 conn.close()
+
+    class AtendimentoModel:
+        @staticmethod  # Fecha o atendimento
+        def fechar(paciente_id: int, funcionario_cpf: str) -> dict:
+            conn = cur = None
+            try:
+                conn = get_connection()
+                cur = conn.cursor()
+                cur.execute(
+                    """
+                UPDATE tb_atendimentos
+                SET status='FECHADO', finalizado_em=CURRENT_TIMESTAMP
+                WHERE paciente_id=%s AND funcionario_cpf=%s AND status='ABERTO'
+            """,
+                    (paciente_id, funcionario_cpf),
+                )
+                conn.commit()
+                if cur.rowcount == 0:
+                    return {
+                        "ok": False,
+                        "msg": "Nenhum atendimento está aberto no momento.",
+                    }
+                return {"ok": True, "msg": "Atendimento fechado."}
+            finally:
+                if cur:
+                    cur.close()
+                if conn:
+                    conn.close()
