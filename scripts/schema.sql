@@ -158,8 +158,21 @@ INSERT IGNORE INTO tb_funcionarios_hospital (cpf, nome, funcao, especialidade_id
   ('44444444444','Dra. Ana Rocha','MEDICO',1);
   
   
--- Testes
+  
+-- Indices e algumas outras regras
+-- Paciente por status
+CREATE INDEX if not EXISTS idx_pac_status_ps on tb_pacientes (status_ps, especialidade_req_id);
 
+-- Triagem para cada paciente
+CREATE INDEX if not EXISTS idx_tri_paciente on tb_triagens (paciente_id);
+
+-- Atendimentos (para reforçar)
+CREATE INDEX if not EXISTS idx_atd_paciente_status on tb_atendimentos (paciente_id, status);
+CREATE INDEX if not EXISTS idx_atd_func_status on tb_atendimentos (funcionario_id, status);
+
+
+
+-- Testes
 -- Ver especialidades
 select * from tb_especialidades;
 
